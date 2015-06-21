@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="msapplication-tap-highlight" content="no" />
+<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+<meta name="viewport"
+	content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+<title>Verificação de endereço</title>
+<script type="text/javascript" src="js/cordova.js"></script>
+
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+</head>
+<body>
+	<div class="container-fluid" style="width: 100%; height: 100%">
+		<div class="row">
+
+			<form class="form-horizontal">
+				<fieldset>
+
+					<!-- Form Name -->
+					<legend>Saiba seu cep</legend>
+
+					<!-- Text input-->
+					<div class="control-group">
+						<label class="control-label" for="cep">cep</label>
+						<div class="controls">
+							<input id="cep" name="cep" type="number"
+								placeholder="Seu cep aqui" class="input-xlarge cls "
+								pattern="[0-9]+$">
+
+						</div>
+					</div>
+
+					<!-- Button -->
+					<div class="control-group">
+						<label class="control-label" for="verificar"></label>
+						<div class="controls">
+							<a id="verificar" name="verificarCep" class="btn btn-success"
+								onclick="verificaCep();">verificar cep</a>
+								<a id="verificar" name="verificarCep" class="btn btn-danger"
+								onclick="$('.cls').val('');">Limpar tudo</a>
+						</div>
+					</div>
+
+				</fieldset>
+			</form>
+			<div id="dados">
+				<form class="form-horizontal">
+					<fieldset>
+
+						<!-- Form Name -->
+						<legend>Endereço completo</legend>
+
+						<!-- Text input-->
+						<div class="form-group">
+							<label class="col-md-2 control-label" for="rua">Rua</label>
+							<div class="col-md-4">
+								<input id="rua" name="rua" placeholder=""
+									class=" cls form-control input-md" type="text">
+
+							</div>
+						</div>
+
+
+						<!-- Text input-->
+						<div class="form-group">
+							<label class="col-md-2 control-label" for="cepR">Cep</label>
+							<div class="col-md-4">
+								<input id="cepR" name="cepR" placeholder=""
+									class=" cls form-control input-md" type="text" readonly="true">
+
+							</div>
+						</div>
+						<!-- Text input-->
+						<div class="form-group">
+							<label class="col-md-2 control-label" for="bairro">Bairro</label>
+							<div class="col-md-4">
+								<input id="bairro" name="bairro" placeholder=""
+									class=" cls form-control input-md" type="text">
+
+							</div>
+						</div>
+
+						<!-- Text input-->
+						<div class="form-group">
+							<label class="col-md-2 control-label" for="cidade">Cidade</label>
+							<div class="col-md-4">
+								<input id="cidade" name="cidade" placeholder=""
+									class=" cls form-control input-md" type="text">
+
+							</div>
+						</div>
+
+						<!-- Text input-->
+						<div class="form-group">
+							<label class="col-md-2 control-label" for="uf">Estado</label>
+							<div class="col-md-4">
+								<input id="uf" name="uf" placeholder=""
+									class=" cls form-control input-md" type="text" MAXLENGTH="2">
+
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label" for="verificar"></label>
+							<div class="controls">
+								<a id="verificar" name="verificarEnd" class="btn btn-success"
+									onclick="verificaEnd()">verificar Endereco</a>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+
+
+
+
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		// app.initialize();
+
+		function verificaCep() {
+			var cep = $("#cep").val();
+			if (cep.length != 8) {
+				alert("Cep invalido");
+			} else {
+				var url = "http://republicavirtual.com.br/web_cep.php?cep="
+						+ cep + "&formato=json";
+				$.getJSON(url, function(data) {
+
+					$("#rua").val(data.logradouro);
+					$("#bairro").val(data.bairro);
+					$("#cidade").val(data.cidade);
+					$("#uf").val(data.uf);
+				});
+
+			}
+
+		}
+		function verificaEnd() {
+			var url = "http://viacep.com.br/ws/";
+			var uf = $("#uf").val();
+			var rua = $("#rua").val();
+			var cidade = $("#cidade").val();
+			if ((uf.length < 1) || (rua.length < 1) || (cidade.length < 1)) {
+				alert("Para pesquisa de CEP é necessário informar rua, cidade e UF");
+			} else {
+				url = url + "/" + uf + "/" + cidade + "/" + rua + "/json";
+				$.getJSON(url, function(data) {
+					$("#cepR").val(data[0].cep);
+				});
+
+			}
+
+		}
+	</script>
+</body>
+</html>
